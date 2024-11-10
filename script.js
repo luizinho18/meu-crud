@@ -5,8 +5,17 @@ function calcularContagemRegressiva(dataValidade) {
     const agora = new Date();
     const validade = new Date(dataValidade);
     const tempoRestante = validade - agora;
+
+    if (tempoRestante <= 0) {
+        return "Expirado";
+    }
+
     const diasRestantes = Math.floor(tempoRestante / (1000 * 60 * 60 * 24));
-    return diasRestantes;
+    const horasRestantes = Math.floor((tempoRestante % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+    const minutosRestantes = Math.floor((tempoRestante % (1000 * 60 * 60)) / (1000 * 60));
+    const segundosRestantes = Math.floor((tempoRestante % (1000 * 60)) / 1000);
+
+    return `${diasRestantes}d ${horasRestantes}h ${minutosRestantes}m ${segundosRestantes}s`;
 }
 
 // Função para adicionar produto
@@ -40,17 +49,25 @@ function atualizarLista() {
     const produtos = JSON.parse(localStorage.getItem("produtos")) || [];
 
     produtos.forEach((produto, index) => {
-        const diasRestantes = calcularContagemRegressiva(produto.validade);
-
         const divProduto = document.createElement("div");
         divProduto.classList.add("product-item");
 
+        // Calculando a contagem regressiva
+        const countdown = calcularContagemRegressiva(produto.validade);
+
         divProduto.innerHTML = `
             <span>${produto.nome} - ${produto.quantidade} unidades</span>
-            <span class="countdown">Vence em: ${diasRestantes} dias</span>
+            <span class="countdown" id="countdown${index}">${countdown}</span>
             <button onclick="excluirProduto(${index})">Excluir</button>
         `;
         listaProdutos.appendChild(divProduto);
+
+        // Atualizar a contagem regressiva a cada segundo
+        setInterval(() => {
+            const countdownElement = document.getElementById(`countdown${index}`);
+            const newCountdown = calcularContagemRegressiva(produto.validade);
+            countdownElement.textContent = newCountdown;
+        }, 1000);
     });
 }
 
