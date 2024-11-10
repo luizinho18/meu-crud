@@ -1,40 +1,35 @@
+/* style.css */
+
 body {
     font-family: Arial, sans-serif;
-    background-color: #f4f4f9;
-    margin: 0;
-    padding: 20px;
 }
 
 .container {
-    max-width: 800px;
-    margin: auto;
-    padding: 20px;
-    background-color: #fff;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    width: 80%;
+    margin: 0 auto;
 }
 
-h1 {
-    text-align: center;
-    color: #333;
+.product-form {
+    margin: 20px 0;
 }
 
-.product {
-    border: 1px solid #ddd;
-    padding: 15px;
-    margin-bottom: 15px;
-    background-color: #f9f9f9;
-    border-radius: 5px;
+.product-form input {
+    margin: 5px;
+    padding: 8px;
 }
 
-.product h3 {
-    margin-top: 0;
+.product-list {
+    margin-top: 20px;
+}
+
+.product-item {
+    margin: 10px 0;
+    padding: 10px;
+    border: 1px solid #ccc;
+    display: flex;
+    justify-content: space-between;
 }
 
 .countdown {
     font-weight: bold;
-    color: #ff6347;
-}
-
-.product p {
-    margin: 5px 0;
 }
