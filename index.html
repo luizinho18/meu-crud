@@ -69,17 +69,19 @@
             color: #555;
         }
 
-        .btn-delete {
+        .btn-delete-all {
             background-color: #f44336;
             color: white;
+            padding: 12px 25px;
             border: none;
-            padding: 5px 10px;
             cursor: pointer;
+            text-align: center;
+            font-size: 16px;
             border-radius: 5px;
             transition: background-color 0.3s ease;
         }
 
-        .btn-delete:hover {
+        .btn-delete-all:hover {
             background-color: #e53935;
         }
 
@@ -184,27 +186,50 @@
             }
         }
 
-        /* Efeito de zoom no modal */
-        .modal:target {
-            opacity: 1;
-            transform: scale(1.1);
+        /* Estilos para o campo de pesquisa */
+        #searchBox {
+            width: 100%;
+            padding: 10px;
+            margin-top: 20px;
+            font-size: 16px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
         }
 
+        .autocomplete-suggestions {
+            border: 1px solid #ddd;
+            background-color: #fff;
+            position: absolute;
+            width: calc(100% - 22px);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            z-index: 10;
+        }
+
+        .autocomplete-suggestion {
+            padding: 10px;
+            cursor: pointer;
+        }
+
+        .autocomplete-suggestion:hover {
+            background-color: #f0f0f0;
+        }
     </style>
 </head>
 <body>
 
     <div class="container">
         <h1>Cadastro de Produtos</h1>
+        <input type="text" id="searchBox" placeholder="Pesquisar Produto..." oninput="searchProduct()">
         <button class="btn" id="addProductButton">Cadastrar Produto</button>
+        <button class="btn-delete-all" id="deleteSelectedButton">Excluir Selecionados</button>
         <table id="productTable">
             <thead>
                 <tr>
+                    <th><input type="checkbox" id="selectAll" onclick="selectAll()"></th>
                     <th>Produto</th>
                     <th>Quantidade</th>
                     <th>Data de Vencimento</th>
                     <th>Contagem Regressiva</th>
-                    <th>Ações</th>
                 </tr>
             </thead>
             <tbody>
@@ -234,6 +259,10 @@
         const productModal = document.getElementById('productModal');
         const closeModalButton = document.getElementById('closeModalButton');
         const productForm = document.getElementById('productForm');
+        const searchBox = document.getElementById('searchBox');
+        const selectAllCheckbox = document.getElementById('selectAll');
+        const deleteSelectedButton = document.getElementById('deleteSelectedButton');
+        let filteredProducts = products;
 
         // Exibir o modal
         addProductButton.addEventListener('click', () => {
@@ -252,6 +281,7 @@
             }
         };
 
+        // Adicionar produto
         productForm.addEventListener('submit', function(e) {
             e.preventDefault();
 
@@ -263,54 +293,43 @@
                 id: Date.now(),
                 name: productName,
                 quantity: productQuantity,
-                expiryDate: productExpiry
+                expiry: productExpiry,
             };
 
             products.push(newProduct);
-            localStorage.setItem('products', JSON.stringify(products)); 
-            renderTable();
-            productForm.reset();
-            productModal.style.display = "none";  // Fecha o modal após salvar
+            localStorage.setItem('products', JSON.stringify(products));
+            productForm.reset(); // Limpar campos
+            productModal.style.display = "none"; // Fechar o modal
+            renderTable(); // Atualizar a tabela
         });
 
+        // Renderizar a tabela
         function renderTable() {
             productTable.innerHTML = '';
-            products.forEach(product => {
+            filteredProducts.forEach(product => {
                 const row = productTable.insertRow();
-                
-                const cellName = row.insertCell(0);
-                cellName.textContent = product.name;
+                row.innerHTML = `
+                    <td><input type="checkbox" class="productCheckbox" data-id="${product.id}"></td>
+                    <td>${product.name}</td>
+                    <td>${product.quantity}</td>
+                    <td>${product.expiry.split('-').reverse().join('-')}</td>
+                    <td><span class="countdown" data-expiry="${product.expiry}">Carregando...</span></td>
+                `;
+            });
+            startCountdowns();
+        }
 
-                const cellQuantity = row.insertCell(1);
-                cellQuantity.textContent = product.quantity;
-
-                const cellExpiry = row.insertCell(2);
-                cellExpiry.textContent = formatDate(product.expiryDate);
-
-                const cellCountdown = row.insertCell(3);
-                const countdownElement = document.createElement('span');
-                cellCountdown.appendChild(countdownElement);
-                updateCountdown(product.expiryDate, countdownElement);
-
-                const cellActions = row.insertCell(4);
-                const deleteButton = document.createElement('button');
-                deleteButton.textContent = 'Excluir';
-                deleteButton.classList.add('btn-delete');
-                deleteButton.onclick = () => deleteProduct(product.id);
-                cellActions.appendChild(deleteButton);
+        // Iniciar contagem regressiva
+        function startCountdowns() {
+            const countdowns = document.querySelectorAll('.countdown');
+            countdowns.forEach(countdown => {
+                const expiryDate = countdown.getAttribute('data-expiry');
+                setCountdown(countdown, expiryDate);
             });
         }
 
-        function formatDate(dateString) {
-            const date = new Date(dateString);
-            const day = String(date.getDate()).padStart(2, '0');
-            const month = String(date.getMonth() + 1).padStart(2, '0');
-            const year = date.getFullYear();
-            return `${day}-${month}-${year}`;
-        }
-
-        function updateCountdown(expiryDate, element) {
-            const interval = setInterval(() => {
+        function setCountdown(element, expiryDate) {
+            const interval = setInterval(function () {
                 const now = new Date().getTime();
                 const targetDate = new Date(expiryDate).getTime();
                 const distance = targetDate - now;
@@ -330,13 +349,38 @@
             }, 1000);
         }
 
-        function deleteProduct(id) {
-            products = products.filter(product => product.id !== id);
-            localStorage.setItem('products', JSON.stringify(products)); 
+        // Selecionar todos os produtos
+        function selectAll() {
+            const checkboxes = document.querySelectorAll('.productCheckbox');
+            checkboxes.forEach(checkbox => {
+                checkbox.checked = selectAllCheckbox.checked;
+            });
+        }
+
+        // Excluir produtos selecionados
+        deleteSelectedButton.addEventListener('click', function() {
+            const selectedIds = [];
+            const checkboxes = document.querySelectorAll('.productCheckbox:checked');
+            checkboxes.forEach(checkbox => {
+                selectedIds.push(parseInt(checkbox.getAttribute('data-id')));
+            });
+
+            if (selectedIds.length > 0) {
+                products = products.filter(product => !selectedIds.includes(product.id));
+                localStorage.setItem('products', JSON.stringify(products));
+                renderTable(); // Re-renderizar a tabela após exclusão
+            }
+        });
+
+        // Buscar produtos
+        function searchProduct() {
+            const query = searchBox.value.toLowerCase();
+            filteredProducts = products.filter(product => product.name.toLowerCase().includes(query));
             renderTable();
         }
 
-        renderTable();
+        renderTable(); // Inicializar a tabela
     </script>
+
 </body>
 </html>
