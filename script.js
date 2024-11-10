@@ -47,20 +47,29 @@ function displayProducts(products) {
     productList.innerHTML = '';  // Limpa a lista antes de mostrar novos produtos
 
     if (products.length === 0) {
-        productList.innerHTML = '<p>Nenhum produto cadastrado.</p>';
+        productList.innerHTML = '<p class="no-products">Nenhum produto cadastrado.</p>';
         return;
     }
 
     products.forEach(product => {
         const [barcode, name, quantity, validity, daysRemaining] = product;
 
+        // Calcular a contagem regressiva no frontend com base na data de validade
+        const validityDate = new Date(validity);
+        const today = new Date();
+        const timeDifference = validityDate - today;
+        const remainingDays = Math.floor(timeDifference / (1000 * 60 * 60 * 24));
+
         const productElement = document.createElement("div");
+        productElement.classList.add("product-card");
+
+        // Adiciona a contagem regressiva no HTML
         productElement.innerHTML = `
             <h3>${name}</h3>
             <p><strong>Código de Barras:</strong> ${barcode}</p>
             <p><strong>Quantidade:</strong> ${quantity}</p>
             <p><strong>Data de Validade:</strong> ${validity}</p>
-            <p><strong>Contagem Regressiva:</strong> ${daysRemaining} dias restantes</p>
+            <p class="countdown">Contagem Regressiva: ${remainingDays} dias restantes</p>
         `;
         productList.appendChild(productElement);
     });
