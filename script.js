@@ -1,76 +1,69 @@
-const apiUrl = 'https://script.google.com/macros/s/AKfycbybyvuwcmqml3KxC2ew0KzAnE25kaBFyFpzvRA3k8oLPctiViaccEws1II_Ven5XN8f/exec'; // Substitua pelo seu ID do script
+// URL da sua planilha do Google Sheets (com seu Google Apps Script)
+const sheetUrl = 'https://script.google.com/macros/s/AKfycbyCwUS-dDj5RfQbSxy-o8deYYXIuyKgd_e4f9zR50QHK7aRIdARq6PXCyKqM216Zc8l/exec?action=read';
 
-// Função para cadastrar produto
-function createProduct() {
-    const barcode = document.getElementById("barcode").value;
-    const name = document.getElementById("name").value;
-    const quantity = document.getElementById("quantity").value;
-    const validity = document.getElementById("validity").value;
+// Função para buscar os produtos do Google Sheets
+async function fetchProducts() {
+    const response = await fetch(sheetUrl);
+    const data = await response.json();
 
-    if (!barcode || !name || !quantity || !validity) {
-        alert("Por favor, preencha todos os campos.");
-        return;
+    if (data && data.length > 0) {
+        displayProducts(data);
     }
-
-    // Envia dados para o Google Apps Script
-    fetch(`${apiUrl}?action=create&barcode=${barcode}&name=${name}&quantity=${quantity}&validity=${validity}`, {
-        method: 'GET',  // 'GET' para enviar dados pela URL
-    })
-    .then(response => response.text())  // Resposta do servidor em texto
-    .then(data => {
-        console.log(data);
-        alert(data);  // Exibe mensagem de sucesso ou erro
-        readProducts();  // Atualiza a lista de produtos
-    })
-    .catch(error => {
-        console.error("Erro ao cadastrar produto:", error);
-        alert("Erro ao cadastrar produto.");
-    });
 }
 
-// Função para ler os produtos da planilha
-function readProducts() {
-    fetch(`${apiUrl}?action=read`)
-        .then(response => response.json())  // Espera uma resposta JSON
-        .then(data => {
-            displayProducts(data);  // Passa os dados para exibição
-        })
-        .catch(error => {
-            console.error("Erro ao carregar produtos:", error);
-            alert("Erro ao carregar produtos.");
-        });
-}
-
-// Função para exibir os produtos no HTML
+// Função para exibir os produtos na página
 function displayProducts(products) {
-    const productList = document.getElementById("product-list");
-    productList.innerHTML = '';  // Limpa a lista antes de mostrar novos produtos
-
-    if (products.length === 0) {
-        productList.innerHTML = '<p class="no-products">Nenhum produto cadastrado.</p>';
-        return;
-    }
+    const productList = document.getElementById('product-list');
+    productList.innerHTML = ''; // Limpa a lista antes de exibir novamente
 
     products.forEach(product => {
-        const [barcode, name, quantity, validity, daysRemaining] = product;
+        const productElement = document.createElement('div');
+        productElement.classList.add('product');
 
-        // Calcular a contagem regressiva no frontend com base na data de validade
-        const validityDate = new Date(validity);
-        const today = new Date();
-        const timeDifference = validityDate - today;
-        const remainingDays = Math.floor(timeDifference / (1000 * 60 * 60 * 24));
+        // Calcula a contagem regressiva
+        const validityDate = new Date(product.validity); // Data de validade do produto
+        const timeLeft = calculateTimeLeft(validityDate);
 
-        const productElement = document.createElement("div");
-        productElement.classList.add("product-card");
-
-        // Adiciona a contagem regressiva no HTML
         productElement.innerHTML = `
-            <h3>${name}</h3>
-            <p><strong>Código de Barras:</strong> ${barcode}</p>
-            <p><strong>Quantidade:</strong> ${quantity}</p>
-            <p><strong>Data de Validade:</strong> ${validity}</p>
-            <p class="countdown">Contagem Regressiva: ${remainingDays} dias restantes</p>
+            <h3>${product.name}</h3>
+            <p>Código de Barras: ${product.barcode}</p>
+            <p>Quantidade: ${product.quantity}</p>
+            <p>Validade: ${product.validity}</p>
+            <p><strong>Contagem Regressiva: </strong><span class="countdown">${timeLeft}</span></p>
         `;
         productList.appendChild(productElement);
     });
+
+    // Atualiza a contagem regressiva a cada segundo
+    setInterval(updateCountdown, 1000);
 }
+
+// Função para calcular a contagem regressiva
+function calculateTimeLeft(validityDate) {
+    const now = new Date();
+    const timeDifference = validityDate - now;
+    
+    if (timeDifference <= 0) {
+        return 'Produto Vencido';
+    }
+
+    const daysLeft = Math.floor(timeDifference / (1000 * 60 * 60 * 24));
+    const hoursLeft = Math.floor((timeDifference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+    const minutesLeft = Math.floor((timeDifference % (1000 * 60 * 60)) / (1000 * 60));
+
+    return `${daysLeft} dias, ${hoursLeft} horas e ${minutesLeft} minutos restantes`;
+}
+
+// Função para atualizar a contagem regressiva no DOM
+function updateCountdown() {
+    const countdowns = document.querySelectorAll('.countdown');
+    
+    countdowns.forEach(countdown => {
+        const validityDate = new Date(countdown.parentElement.querySelector('p:nth-child(4)').textContent.replace('Validade: ', ''));
+        const timeLeft = calculateTimeLeft(validityDate);
+        countdown.textContent = timeLeft;
+    });
+}
+
+// Chama a função para buscar os produtos assim que a página carregar
+window.onload = fetchProducts;
