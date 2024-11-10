@@ -4,17 +4,24 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>CRUD com Google Sheets</title>
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="style.css"> <!-- Esse arquivo é opcional para melhorar o visual -->
 </head>
 <body>
-    <h1>Aplicação CRUD</h1>
+    <h1>Cadastro de Produtos</h1>
+    
+    <!-- Formulário de entrada para adicionar novos dados -->
     <div>
-        <input type="text" id="name" placeholder="Nome">
+        <input type="text" id="name" placeholder="Nome do Produto">
         <input type="text" id="description" placeholder="Descrição">
-        <button onclick="createData()">Criar</button>
-        <button onclick="readData()">Ler</button>
+        <input type="date" id="validity" placeholder="Validade">
+        <input type="url" id="imageUrl" placeholder="URL da Imagem">
+        <button onclick="createData()">Cadastrar Produto</button>
+        <button onclick="readData()">Mostrar Produtos</button>
     </div>
+
+    <!-- Aqui os dados serão exibidos -->
     <div id="data-display"></div>
-    <script src="script.js"></script>
+
+    <script src="script.js"></script> <!-- Arquivo JavaScript para manipulação dos dados -->
 </body>
 </html>
