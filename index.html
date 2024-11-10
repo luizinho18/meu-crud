@@ -3,25 +3,34 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CRUD com Google Sheets</title>
-    <link rel="stylesheet" href="style.css"> <!-- Esse arquivo é opcional para melhorar o visual -->
+    <title>Cadastro de Produtos</title>
 </head>
 <body>
     <h1>Cadastro de Produtos</h1>
-    
-    <!-- Formulário de entrada para adicionar novos dados -->
-    <div>
-        <input type="text" id="name" placeholder="Nome do Produto">
-        <input type="text" id="description" placeholder="Descrição">
-        <input type="date" id="validity" placeholder="Validade">
-        <input type="url" id="imageUrl" placeholder="URL da Imagem">
-        <button onclick="createData()">Cadastrar Produto</button>
-        <button onclick="readData()">Mostrar Produtos</button>
-    </div>
 
-    <!-- Aqui os dados serão exibidos -->
+    <form>
+        <label for="name">Nome do Produto:</label>
+        <input type="text" id="name" required><br>
+
+        <label for="description">Descrição:</label>
+        <input type="text" id="description" required><br>
+
+        <label for="validity">Validade:</label>
+        <input type="text" id="validity" required><br>
+
+        <label for="imageUrl">URL da Imagem:</label>
+        <input type="text" id="imageUrl" required><br>
+
+        <button type="button" onclick="createData()">Cadastrar Produto</button>
+    </form>
+
+    <hr>
+
+    <h2>Lista de Produtos</h2>
+    <button id="show-products-btn">Mostrar Produtos</button>
+
     <div id="data-display"></div>
 
-    <script src="script.js"></script> <!-- Arquivo JavaScript para manipulação dos dados -->
+    <script src="script.js"></script>
 </body>
 </html>
