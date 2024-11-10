@@ -4,112 +4,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Cadastro de Produtos</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f4f4f9;
-            margin: 0;
-            padding: 20px;
-        }
-
-        h1, h2 {
-            color: #333;
-            text-align: center;
-        }
-
-        form {
-            background-color: #fff;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-            margin: 0 auto 20px;
-            max-width: 400px;
-        }
-
-        label {
-            font-weight: bold;
-            display: block;
-            margin-bottom: 5px;
-        }
-
-        input {
-            width: 100%;
-            padding: 8px;
-            margin-bottom: 15px;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-        }
-
-        button {
-            background-color: #4CAF50;
-            color: white;
-            padding: 10px 20px;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            width: 100%;
-        }
-
-        button:hover {
-            background-color: #45a049;
-        }
-
-        .product-list {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
-            gap: 20px;
-        }
-
-        .product-card {
-            background-color: #fff;
-            border: 1px solid #ddd;
-            padding: 15px;
-            border-radius: 8px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.05);
-            width: 250px;
-            text-align: center;
-        }
-
-        .product-card h3 {
-            margin-top: 0;
-            font-size: 1.2em;
-        }
-
-        .countdown {
-            color: #e74c3c;  /* Vermelho para destacar a contagem regressiva */
-            font-weight: bold;
-        }
-
-        .no-products {
-            color: #777;
-        }
-    </style>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
-
-    <h1>Cadastro de Produtos</h1>
-
-    <form id="form-cadastro">
-        <label for="barcode">Código de Barras:</label>
-        <input type="text" id="barcode" required><br>
-
-        <label for="name">Nome:</label>
-        <input type="text" id="name" required><br>
-
-        <label for="quantity">Quantidade:</label>
-        <input type="number" id="quantity" required><br>
-
-        <label for="validity">Data de Validade:</label>
-        <input type="date" id="validity" required><br>
-
-        <button type="button" onclick="createProduct()">Cadastrar Produto</button>
-    </form>
-
-    <h2>Lista de Produtos</h2>
-    <button onclick="readProducts()">Mostrar Produtos</button>
-    <div id="product-list" class="product-list"></div>
-
+    <div class="container">
+        <h1>Produtos Cadastrados</h1>
+        <div id="product-list"></div> <!-- Lista de produtos vai ser exibida aqui -->
+    </div>
     <script src="script.js"></script>
 </body>
 </html>
