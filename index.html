@@ -3,330 +3,202 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CRUD de Produtos</title>
+    <title>Cadastro de Produtos</title>
     <style>
-        /* Reset básico */
-        * {
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
             margin: 0;
             padding: 0;
-            box-sizing: border-box;
-        }
-        
-        body {
-            font-family: 'Arial', sans-serif;
-            background-color: #f4f7fb;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            padding: 20px;
         }
 
-        h1, h2 {
-            color: #333;
-            margin-bottom: 20px;
-        }
-
-        /* Botão para abrir o modal */
-        .open-modal-button {
-            background-color: #5c6bc0;
-            color: white;
-            padding: 12px 24px;
-            font-size: 16px;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            margin: 20px 0;
-            transition: background-color 0.3s;
-        }
-
-        .open-modal-button:hover {
-            background-color: #3f51b5;
-        }
-
-        /* Modal (pop-up) */
-        .modal {
-            display: none; /* Ocultar o modal por padrão */
-            position: fixed;
-            z-index: 1;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.5); /* Fundo semitransparente */
-            justify-content: center;
-            align-items: center;
-            opacity: 0;
-            pointer-events: none;
-            transition: opacity 0.3s ease;
-        }
-
-        .modal.show {
-            display: flex;
-            opacity: 1;
-            pointer-events: auto;
-        }
-
-        .modal-content {
-            background-color: #ffffff;
-            padding: 30px;
-            border-radius: 10px;
-            width: 100%;
-            max-width: 600px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-            animation: slideIn 0.3s ease-in-out;
-        }
-
-        /* Animação do modal */
-        @keyframes slideIn {
-            from {
-                transform: translateY(-50px);
-                opacity: 0;
-            }
-            to {
-                transform: translateY(0);
-                opacity: 1;
-            }
-        }
-
-        .modal-content h2 {
-            color: #333;
-            font-size: 24px;
-            margin-bottom: 20px;
+        h1 {
             text-align: center;
+            margin-top: 20px;
         }
 
-        .modal-content label {
-            font-size: 16px;
-            margin-bottom: 8px;
-            color: #555;
-            display: block;
+        .container {
+            width: 90%;
+            margin: 0 auto;
+            max-width: 1200px;
         }
 
-        .modal-content input {
-            width: 100%;
-            padding: 12px;
-            margin-bottom: 15px;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-            font-size: 16px;
-            transition: border-color 0.3s;
-        }
-
-        .modal-content input:focus {
-            border-color: #5c6bc0;
-            outline: none;
-        }
-
-        .modal-content button {
-            background-color: #5c6bc0;
-            color: white;
-            padding: 12px;
-            border: none;
-            border-radius: 5px;
-            font-size: 16px;
-            cursor: pointer;
-            transition: background-color 0.3s;
-            width: 100%;
-        }
-
-        .modal-content button:hover {
-            background-color: #3f51b5;
-        }
-
-        .close-button {
-            background-color: #f44336;
+        .btn {
+            background-color: #4CAF50;
             color: white;
             padding: 10px 20px;
             border: none;
             cursor: pointer;
-            border-radius: 5px;
-            font-size: 14px;
-            display: block;
-            margin-top: 20px;
-            width: 100%;
-            transition: background-color 0.3s;
+            text-align: center;
+            margin: 20px 0;
+            font-size: 16px;
         }
 
-        .close-button:hover {
-            background-color: #d32f2f;
+        .btn:hover {
+            background-color: #45a049;
         }
 
-        /* Tabela */
         table {
             width: 100%;
-            max-width: 800px;
-            margin-top: 20px;
+            margin: 20px 0;
             border-collapse: collapse;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
             background-color: white;
-            border-radius: 10px;
+            border-radius: 5px;
             overflow: hidden;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
         }
 
         th, td {
             padding: 12px;
-            text-align: center;
+            text-align: left;
             border-bottom: 1px solid #ddd;
         }
 
         th {
-            background-color: #5c6bc0;
-            color: white;
+            background-color: #f2f2f2;
         }
 
         td {
-            background-color: #f9f9f9;
+            word-wrap: break-word;
+            max-width: 150px;
         }
 
-        tr:hover td {
-            background-color: #f1f1f1;
-        }
-
-        .countdown {
-            font-weight: bold;
-            color: #e91e63;
-        }
-
-        .actions button {
-            padding: 6px 12px;
-            margin: 5px;
-            border: none;
+        .btn-delete {
             background-color: #f44336;
             color: white;
-            font-size: 14px;
+            border: none;
+            padding: 5px 10px;
             cursor: pointer;
-            border-radius: 5px;
         }
 
-        .actions button:hover {
-            background-color: #d32f2f;
+        .btn-delete:hover {
+            background-color: #e53935;
+        }
+
+        /* Estilos do modal */
+        .modal {
+            display: none; /* Começa oculto */
+            position: fixed;
+            z-index: 1; /* Fica em cima de tudo */
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgb(0, 0, 0); /* Cor de fundo escura */
+            background-color: rgba(0, 0, 0, 0.4); /* Fundo transparente */
+            padding-top: 60px;
+        }
+
+        .modal-content {
+            background-color: #fefefe;
+            margin: 5% auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 80%;
+            max-width: 400px;
+        }
+
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+        }
+
+        .close:hover,
+        .close:focus {
+            color: black;
+            text-decoration: none;
+            cursor: pointer;
         }
 
         /* Responsividade */
         @media (max-width: 768px) {
-            body {
-                padding: 10px;
-            }
-
-            .modal-content {
-                padding: 20px;
-                width: 90%; /* Modal ocupa 90% da largura da tela em dispositivos menores */
-                max-width: none;
-            }
-
-            .modal-content h2 {
-                font-size: 20px;
-            }
-
-            .modal-content input, .modal-content button {
-                font-size: 14px;
-                padding: 10px;
-            }
-
-            .open-modal-button {
-                padding: 10px 20px;
-                font-size: 14px;
-            }
-
             table {
-                max-width: 100%;
-                margin-top: 20px;
+                width: 100%;
+                font-size: 14px;
             }
 
             th, td {
-                font-size: 14px;
-                padding: 10px;
+                padding: 8px;
             }
 
-            .actions button {
-                padding: 6px 12px;
-                font-size: 12px;
-            }
-        }
-
-        /* Responsividade para dispositivos muito pequenos */
-        @media (max-width: 480px) {
-            .modal-content {
-                padding: 15px;
+            .container {
+                padding: 0 15px;
             }
 
-            .open-modal-button {
+            .btn {
                 width: 100%;
-                font-size: 16px;
-            }
-
-            table {
-                font-size: 12px;
+                padding: 12px;
+                font-size: 18px;
             }
         }
     </style>
 </head>
 <body>
 
-    <h1>Cadastro de Produtos</h1>
-    
-    <!-- Botão para abrir o modal -->
-    <button class="open-modal-button" id="openModalButton">Cadastrar Produto</button>
+    <div class="container">
+        <h1>Cadastro de Produtos</h1>
+        <button class="btn" id="addProductButton">Cadastrar Produto</button>
+        <table id="productTable">
+            <thead>
+                <tr>
+                    <th>Produto</th>
+                    <th>Código</th>
+                    <th>Quantidade</th>
+                    <th>Data de Vencimento</th>
+                    <th>Contagem Regressiva</th>
+                    <th>Ações</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Os produtos serão exibidos aqui -->
+            </tbody>
+        </table>
+    </div>
 
-    <!-- Modal -->
+    <!-- Modal para cadastro de produto -->
     <div id="productModal" class="modal">
         <div class="modal-content">
-            <h2>Adicionar Produto</h2>
+            <span id="closeModalButton" class="close">&times;</span>
+            <h2>Cadastrar Produto</h2>
             <form id="productForm">
-                <label for="productName">Produto:</label>
-                <input type="text" id="productName" required><br>
-
-                <label for="productCode">Código:</label>
-                <input type="text" id="productCode" required><br>
-
-                <label for="productQuantity">Quantidade:</label>
-                <input type="number" id="productQuantity" required><br>
-
-                <label for="productExpiry">Data de Vencimento:</label>
-                <input type="date" id="productExpiry" required><br>
-
-                <button type="submit">Adicionar Produto</button>
+                <input type="text" id="productName" placeholder="Nome do Produto" required>
+                <input type="text" id="productCode" placeholder="Código do Produto" required>
+                <input type="number" id="productQuantity" placeholder="Quantidade" required>
+                <input type="date" id="productExpiry" required>
+                <button type="submit" class="btn">Salvar</button>
             </form>
-            <button class="close-button" id="closeModalButton">Fechar</button>
         </div>
     </div>
 
-    <h2>Lista de Produtos</h2>
-    <table id="productTable">
-        <thead>
-            <tr>
-                <th>Produto</th>
-                <th>Código</th>
-                <th>Quantidade</th>
-                <th>Data de Vencimento</th>
-                <th>Contagem Regressiva</th>
-                <th>Ações</th>
-            </tr>
-        </thead>
-        <tbody>
-        </tbody>
-    </table>
-
     <script>
-        const openModalButton = document.getElementById('openModalButton');
-        const closeModalButton = document.getElementById('closeModalButton');
-        const productModal = document.getElementById('productModal');
-        const productForm = document.getElementById('productForm');
+        // Código JavaScript para manipulação dos dados e do modal
+        let products = JSON.parse(localStorage.getItem('products')) || [];
         const productTable = document.getElementById('productTable').getElementsByTagName('tbody')[0];
+        const addProductButton = document.getElementById('addProductButton');
+        const productModal = document.getElementById('productModal');
+        const closeModalButton = document.getElementById('closeModalButton');
+        const productForm = document.getElementById('productForm');
 
-        let products = [];
-
-        // Abrir o modal
-        openModalButton.addEventListener('click', () => {
-            productModal.classList.add('show');
+        // Exibir o modal
+        addProductButton.addEventListener('click', () => {
+            productModal.style.display = "block";
         });
 
         // Fechar o modal
         closeModalButton.addEventListener('click', () => {
-            productModal.classList.remove('show');
+            productModal.style.display = "none";
         });
 
-        // Adicionar produto
+        // Fechar o modal se clicar fora da caixa de conteúdo
+        window.onclick = function(event) {
+            if (event.target == productModal) {
+                productModal.style.display = "none";
+            }
+        };
+
         productForm.addEventListener('submit', function(e) {
             e.preventDefault();
 
@@ -344,16 +216,17 @@
             };
 
             products.push(newProduct);
+            localStorage.setItem('products', JSON.stringify(products)); 
             renderTable();
             productForm.reset();
-            productModal.classList.remove('show');  // Fechar o modal após cadastrar
+            productModal.style.display = "none";  // Fecha o modal após salvar
         });
 
         function renderTable() {
             productTable.innerHTML = '';
             products.forEach(product => {
                 const row = productTable.insertRow();
-
+                
                 const cellName = row.insertCell(0);
                 cellName.textContent = product.name;
 
@@ -364,7 +237,7 @@
                 cellQuantity.textContent = product.quantity;
 
                 const cellExpiry = row.insertCell(3);
-                cellExpiry.textContent = product.expiryDate;
+                cellExpiry.textContent = formatDate(product.expiryDate);
 
                 const cellCountdown = row.insertCell(4);
                 const countdownElement = document.createElement('span');
@@ -374,9 +247,18 @@
                 const cellActions = row.insertCell(5);
                 const deleteButton = document.createElement('button');
                 deleteButton.textContent = 'Excluir';
+                deleteButton.classList.add('btn-delete');
                 deleteButton.onclick = () => deleteProduct(product.id);
                 cellActions.appendChild(deleteButton);
             });
+        }
+
+        function formatDate(dateString) {
+            const date = new Date(dateString);
+            const day = String(date.getDate()).padStart(2, '0');
+            const month = String(date.getMonth() + 1).padStart(2, '0');
+            const year = date.getFullYear();
+            return `${day}-${month}-${year}`;
         }
 
         function updateCountdown(expiryDate, element) {
@@ -402,8 +284,11 @@
 
         function deleteProduct(id) {
             products = products.filter(product => product.id !== id);
+            localStorage.setItem('products', JSON.stringify(products)); 
             renderTable();
         }
+
+        renderTable();
     </script>
 </body>
 </html>
