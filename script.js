@@ -1,49 +1,56 @@
 const apiUrl = 'https://script.google.com/macros/s/AKfycbwgJTcKSFo_QhAVimjYxkS5qGnPejsbqo_i3uDzbHUT7gioxD0-pkyEi6-5Mzkfg048/exec';
 
-// Função para ler os dados do Google Sheets
-function readData() {
-    fetch(`${apiUrl}?action=read`)
-        .then(response => response.json())  // Recebe os dados em formato JSON
-        .then(data => {
-            console.log("Produtos lidos da planilha:", data); // Exibe os dados no console para depuração
-            displayData(data);  // Exibe os dados na página
-        })
-        .catch(error => {
-            console.error("Erro ao ler dados:", error); // Mostra erros no console
-        });
+// Função para criar um produto
+function createProduct() {
+    const barcode = document.getElementById("barcode").value;
+    const name = document.getElementById("name").value;
+    const quantity = document.getElementById("quantity").value;
+    const validity = document.getElementById("validity").value;
+
+    fetch(`${apiUrl}?action=create&barcode=${barcode}&name=${name}&quantity=${quantity}&validity=${validity}`, {
+        method: 'POST',
+    }).then(response => response.json())
+      .then(data => {
+        console.log("Produto cadastrado com sucesso:", data);
+        alert("Produto cadastrado com sucesso!");
+        readProducts(); // Atualiza a lista
+      })
+      .catch(error => console.error("Erro ao cadastrar produto:", error));
 }
 
-// Função para exibir os dados na página
-function displayData(data) {
-    const dataDisplay = document.getElementById("data-display"); // O elemento onde os dados serão exibidos
-    dataDisplay.innerHTML = '';  // Limpa a área onde os produtos serão listados
+// Função para ler os produtos
+function readProducts() {
+    fetch(`${apiUrl}?action=read`)
+        .then(response => response.json())
+        .then(data => {
+            console.log("Produtos lidos:", data);
+            displayProducts(data);
+        })
+        .catch(error => console.error("Erro ao ler dados:", error));
+}
 
-    if (data.length === 0) {
-        dataDisplay.innerHTML = '<p>Nenhum produto encontrado.</p>';
+// Função para exibir os produtos na tela
+function displayProducts(products) {
+    const productList = document.getElementById("product-list");
+    productList.innerHTML = '';
+
+    if (products.length === 0) {
+        productList.innerHTML = '<p>Nenhum produto cadastrado.</p>';
         return;
     }
 
-    data.forEach(row => {
-        const name = row[0];  // Nome do produto (primeira coluna)
-        const description = row[1];  // Descrição (segunda coluna)
-        const validity = row[2];  // Validade (terceira coluna)
-        const imageUrl = row[3];  // URL da imagem (quarta coluna)
+    products.forEach(product => {
+        const [barcode, name, quantity, validity, daysRemaining] = product;
 
-        // Cria um bloco HTML para exibir cada produto
-        const rowElement = document.createElement("div");
-        rowElement.classList.add("product");  // Adiciona uma classe para estilizar
-
-        rowElement.innerHTML = `
+        // Cria um elemento HTML para cada produto
+        const productElement = document.createElement("div");
+        productElement.innerHTML = `
             <h3>${name}</h3>
-            <p><strong>Descrição:</strong> ${description}</p>
-            <p><strong>Validade:</strong> ${validity}</p>
-            <img src="${imageUrl}" alt="${name}" style="width: 100px; height: auto;">
+            <p><strong>Código de Barras:</strong> ${barcode}</p>
+            <p><strong>Quantidade:</strong> ${quantity}</p>
+            <p><strong>Data de Validade:</strong> ${validity}</p>
+            <p><strong>Contagem Regressiva:</strong> ${daysRemaining} dias restantes</p>
         `;
-
-        // Adiciona o bloco à página
-        dataDisplay.appendChild(rowElement);
+        productList.appendChild(productElement);
     });
 }
-
-// Chama a função readData quando o botão é clicado
-document.getElementById("show-products-btn").addEventListener("click", readData);
