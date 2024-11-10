@@ -8,9 +8,30 @@
 </head>
 <body>
     <div class="container">
-        <h1>Produtos Cadastrados</h1>
-        <div id="product-list"></div> <!-- Lista de produtos vai ser exibida aqui -->
+        <h1>Cadastro de Produtos</h1>
+        
+        <!-- Formulário para cadastro de produtos -->
+        <form id="product-form">
+            <label for="barcode">Código de Barras:</label>
+            <input type="text" id="barcode" required>
+
+            <label for="name">Produto:</label>
+            <input type="text" id="name" required>
+
+            <label for="quantity">Quantidade:</label>
+            <input type="number" id="quantity" required>
+
+            <label for="validity">Data de Validade:</label>
+            <input type="date" id="validity" required>
+
+            <button type="submit">Cadastrar Produto</button>
+        </form>
+
+        <h2>Produtos Cadastrados</h2>
+        <!-- Lista de produtos exibidos -->
+        <div id="product-list"></div>
     </div>
+
     <script src="script.js"></script>
 </body>
 </html>
