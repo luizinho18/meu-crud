@@ -6,15 +6,18 @@
     <title>Cadastro de Produtos</title>
     <style>
         body {
-            font-family: Arial, sans-serif;
-            background-color: #f4f4f4;
+            font-family: 'Arial', sans-serif;
+            background-color: #f7f7f7;
             margin: 0;
             padding: 0;
+            color: #333;
         }
 
         h1 {
             text-align: center;
             margin-top: 20px;
+            font-size: 2rem;
+            color: #4CAF50;
         }
 
         .container {
@@ -26,12 +29,14 @@
         .btn {
             background-color: #4CAF50;
             color: white;
-            padding: 10px 20px;
+            padding: 12px 25px;
             border: none;
             cursor: pointer;
             text-align: center;
             margin: 20px 0;
             font-size: 16px;
+            border-radius: 5px;
+            transition: background-color 0.3s ease;
         }
 
         .btn:hover {
@@ -43,9 +48,8 @@
             margin: 20px 0;
             border-collapse: collapse;
             background-color: white;
-            border-radius: 5px;
-            overflow: hidden;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
         }
 
         th, td {
@@ -56,11 +60,13 @@
 
         th {
             background-color: #f2f2f2;
+            color: #555;
+            font-size: 1.1rem;
         }
 
         td {
-            word-wrap: break-word;
-            max-width: 150px;
+            font-size: 1rem;
+            color: #555;
         }
 
         .btn-delete {
@@ -69,71 +75,121 @@
             border: none;
             padding: 5px 10px;
             cursor: pointer;
+            border-radius: 5px;
+            transition: background-color 0.3s ease;
         }
 
         .btn-delete:hover {
             background-color: #e53935;
         }
 
-        /* Estilos do modal */
+        /* Estilos do Modal */
         .modal {
             display: none; /* Começa oculto */
             position: fixed;
-            z-index: 1; /* Fica em cima de tudo */
+            z-index: 1;
             left: 0;
             top: 0;
             width: 100%;
             height: 100%;
             overflow: auto;
-            background-color: rgb(0, 0, 0); /* Cor de fundo escura */
-            background-color: rgba(0, 0, 0, 0.4); /* Fundo transparente */
+            background-color: rgba(0, 0, 0, 0.4);
             padding-top: 60px;
+            transition: opacity 0.3s ease;
         }
 
         .modal-content {
-            background-color: #fefefe;
+            background-color: #fff;
             margin: 5% auto;
-            padding: 20px;
-            border: 1px solid #888;
+            padding: 30px;
+            border-radius: 10px;
             width: 80%;
-            max-width: 400px;
+            max-width: 500px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+            animation: fadeIn 0.3s ease-out;
+            transition: transform 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
         }
 
         .close {
             color: #aaa;
-            float: right;
             font-size: 28px;
             font-weight: bold;
+            position: absolute;
+            top: 10px;
+            right: 20px;
+            cursor: pointer;
+            transition: color 0.3s ease;
         }
 
         .close:hover,
         .close:focus {
-            color: black;
-            text-decoration: none;
+            color: #333;
+        }
+
+        input, button {
+            width: 100%;
+            padding: 12px;
+            margin: 8px 0;
+            font-size: 1rem;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+            transition: border 0.3s ease;
+        }
+
+        input:focus, button:focus {
+            outline: none;
+            border-color: #4CAF50;
+        }
+
+        button {
+            background-color: #4CAF50;
+            color: white;
             cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #45a049;
         }
 
         /* Responsividade */
         @media (max-width: 768px) {
             table {
-                width: 100%;
                 font-size: 14px;
             }
 
-            th, td {
-                padding: 8px;
+            .btn {
+                width: 100%;
             }
 
             .container {
                 padding: 0 15px;
             }
 
-            .btn {
-                width: 100%;
-                padding: 12px;
-                font-size: 18px;
+            .modal-content {
+                width: 90%;
+                padding: 20px;
+            }
+
+            .close {
+                font-size: 24px;
             }
         }
+
+        /* Efeito de zoom no modal */
+        .modal:target {
+            opacity: 1;
+            transform: scale(1.1);
+        }
+
     </style>
 </head>
 <body>
@@ -145,7 +201,6 @@
             <thead>
                 <tr>
                     <th>Produto</th>
-                    <th>Código</th>
                     <th>Quantidade</th>
                     <th>Data de Vencimento</th>
                     <th>Contagem Regressiva</th>
@@ -165,16 +220,14 @@
             <h2>Cadastrar Produto</h2>
             <form id="productForm">
                 <input type="text" id="productName" placeholder="Nome do Produto" required>
-                <input type="text" id="productCode" placeholder="Código do Produto" required>
                 <input type="number" id="productQuantity" placeholder="Quantidade" required>
                 <input type="date" id="productExpiry" required>
-                <button type="submit" class="btn">Salvar</button>
+                <button type="submit">Salvar</button>
             </form>
         </div>
     </div>
 
     <script>
-        // Código JavaScript para manipulação dos dados e do modal
         let products = JSON.parse(localStorage.getItem('products')) || [];
         const productTable = document.getElementById('productTable').getElementsByTagName('tbody')[0];
         const addProductButton = document.getElementById('addProductButton');
@@ -203,14 +256,12 @@
             e.preventDefault();
 
             const productName = document.getElementById('productName').value;
-            const productCode = document.getElementById('productCode').value;
             const productQuantity = document.getElementById('productQuantity').value;
             const productExpiry = document.getElementById('productExpiry').value;
 
             const newProduct = {
                 id: Date.now(),
                 name: productName,
-                code: productCode,
                 quantity: productQuantity,
                 expiryDate: productExpiry
             };
@@ -230,21 +281,18 @@
                 const cellName = row.insertCell(0);
                 cellName.textContent = product.name;
 
-                const cellCode = row.insertCell(1);
-                cellCode.textContent = product.code;
-
-                const cellQuantity = row.insertCell(2);
+                const cellQuantity = row.insertCell(1);
                 cellQuantity.textContent = product.quantity;
 
-                const cellExpiry = row.insertCell(3);
+                const cellExpiry = row.insertCell(2);
                 cellExpiry.textContent = formatDate(product.expiryDate);
 
-                const cellCountdown = row.insertCell(4);
+                const cellCountdown = row.insertCell(3);
                 const countdownElement = document.createElement('span');
                 cellCountdown.appendChild(countdownElement);
                 updateCountdown(product.expiryDate, countdownElement);
 
-                const cellActions = row.insertCell(5);
+                const cellActions = row.insertCell(4);
                 const deleteButton = document.createElement('button');
                 deleteButton.textContent = 'Excluir';
                 deleteButton.classList.add('btn-delete');
