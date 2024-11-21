@@ -1,213 +1,433 @@
 <!DOCTYPE html>
-<html lang="pt-br">
+<html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Lista de Usuários</title>
-  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&display=swap" rel="stylesheet">
-  <style>
-    body {
-      font-family: 'Roboto', sans-serif;
-      background-color: #f4f7fa;
-      margin: 0;
-      padding: 0;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
-      flex-direction: column;
-    }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestão de Produtos com Alerta</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f0f4f8;
+        }
 
-    .container {
-      width: 90%;
-      max-width: 900px;
-      padding: 20px;
-      background-color: white;
-      border-radius: 12px;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-    }
+        h1 {
+            text-align: center;
+            margin: 20px 0;
+            font-size: 2em;
+            color: #00796b;
+        }
 
-    h1 {
-      text-align: center;
-      color: #333;
-      font-size: 2.5em;
-      margin-bottom: 30px;
-    }
+        .form-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 20px;
+            gap: 10px;
+            padding: 15px;
+            background-color: #ffffff;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+        }
 
-    ul {
-      list-style: none;
-      padding: 0;
-    }
+        .form-container input,
+        .form-container select,
+        .form-container button {
+            padding: 10px;
+            margin: 5px;
+            border: 1px solid #cccccc;
+            border-radius: 5px;
+            font-size: 1em;
+        }
 
-    li {
-      background-color: #ffffff;
-      border: 1px solid #e0e0e0;
-      padding: 20px;
-      margin: 15px 0;
-      border-radius: 10px;
-      display: flex;
-      align-items: center;
-      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
-      transition: transform 0.3s ease;
-    }
+        .form-container button {
+            background-color: #00796b;
+            color: white;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
 
-    li:hover {
-      transform: scale(1.05);
-    }
+        .form-container button:hover {
+            background-color: #00574b;
+        }
 
-    .foto {
-      width: 70px;
-      height: 70px;
-      border-radius: 50%;
-      margin-right: 20px;
-      background-color: #ddd;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-    }
+        .btn-add-module {
+            display: block;
+            margin: 20px auto;
+            padding: 10px 20px;
+            font-size: 1em;
+            background-color: #0288d1;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
 
-    .foto img {
-      width: 100%;
-      height: 100%;
-      border-radius: 50%;
-    }
+        .btn-add-module:hover {
+            background-color: #01579b;
+        }
 
-    .conteudo {
-      flex-grow: 1;
-    }
+        .search-container {
+            text-align: center;
+            margin-bottom: 20px;
+        }
 
-    .nome {
-      font-size: 1.5em;
-      font-weight: 500;
-      color: #333;
-    }
+        .search-container input {
+            padding: 10px;
+            width: 300px;
+            border-radius: 5px;
+            border: 1px solid #cccccc;
+            font-size: 1em;
+        }
 
-    .idade {
-      font-size: 1.2em;
-      color: #555;
-      margin-top: 5px;
-    }
+        .shelf-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            justify-content: center;
+        }
 
-    .id {
-      font-size: 1em;
-      color: #888;
-      margin-top: 8px;
-    }
+        .module {
+            width: 280px;
+            background: white;
+            border-radius: 10px;
+            padding: 15px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            position: relative;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
 
-    /* Estilos para o formulário */
-    form {
-      display: flex;
-      flex-direction: column;
-      margin-bottom: 20px;
-    }
+        .module:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15);
+        }
 
-    input, button {
-      padding: 10px;
-      margin: 10px 0;
-      font-size: 1.2em;
-    }
+        .module h3 {
+            font-size: 1.2em;
+            text-align: center;
+            color: #00796b;
+            margin-bottom: 10px;
+            cursor: pointer;
+        }
 
-    button {
-      background-color: #4CAF50;
-      color: white;
-      border: none;
-      cursor: pointer;
-      transition: background-color 0.3s;
-    }
+        .module h3 input {
+            font-size: 1em;
+            text-align: center;
+            border: none;
+            background: transparent;
+            color: #00796b;
+            outline: none;
+        }
 
-    button:hover {
-      background-color: #45a049;
-    }
+        .alert-indicator {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            width: 25px;
+            height: 25px;
+            background-color: red;
+            border-radius: 50%;
+            color: white;
+            font-size: 0.8em;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            visibility: hidden;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+        }
 
-  </style>
+        .product {
+            background: #e0f7fa;
+            padding: 10px;
+            margin: 8px 0;
+            border-radius: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.9em;
+            border: 1px solid #00796b;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .countdown {
+            font-size: 0.85em;
+            color: #00796b;
+            font-weight: bold;
+        }
+
+        .countdown.alert {
+            color: red;
+            font-weight: bold;
+        }
+
+        .btn-delete {
+            color: red;
+            cursor: pointer;
+            margin-left: 10px;
+            font-weight: bold;
+        }
+
+        .btn-delete-module {
+            position: absolute;
+            top: 10px;
+            left: 10px; /* Mudar para 'left' para posicionar à esquerda */
+            background-color: transparent;
+            color: red;
+            font-size: 1.5em;
+            border: none;
+            cursor: pointer;
+        }
+
+
+    </style>
+    <script src="https://cdn.rawgit.com/davidshimjs/qrcodejs/gh-pages/qrcode.min.js"></script>
 </head>
 <body>
-  <div class="container">
-    <h1>Lista de Usuários</h1>
+    <h1>Gestão de Produtos com Alerta</h1>
 
-    <!-- Formulário para adicionar novos dados -->
-    <form id="form-adicionar">
-      <input type="text" id="nome" placeholder="Nome" required>
-      <input type="number" id="idade" placeholder="Idade" required>
-      <button type="submit">Adicionar</button>
-    </form>
+    <!-- Barra de pesquisa -->
+    <div class="search-container">
+        <input type="text" id="moduleSearch" placeholder="Pesquisar por Seção/Modulo (Ex: Seção 1)" oninput="searchModule()">
+    </div>
 
-    <ul id="dados-lista"></ul>
-  </div>
+    <!-- Formulário para cadastrar produtos -->
+    <div class="form-container">
+        <input type="text" id="productName" placeholder="Nome do Produto" required>
+        <input type="number" id="quantity" placeholder="Quantidade" min="1" required>
+        <input type="date" id="expiryDate" required>
+        <select id="moduleSelect"></select>
+        <button id="addProduct">Adicionar Produto</button>
+    </div>
 
-  <script>
-    // Função para carregar dados existentes
-    async function carregarDados() {
-      try {
-        const response = await fetch('http://192.168.1.114:3000/dados');
-        const dados = await response.json();
-        const lista = document.getElementById('dados-lista');
-        lista.innerHTML = '';
+    <!-- Botão para adicionar novos módulos -->
+    <button class="btn-add-module" id="addModule">Adicionar Novo Módulo</button>
 
-        dados.forEach(dado => {
-          const li = document.createElement('li');
-          const fotoDiv = document.createElement('div');
-          fotoDiv.className = 'foto';
-          const fotoImg = document.createElement('img');
-          fotoImg.src = 'https://www.w3schools.com/w3images/avatar2.png';
-          fotoDiv.appendChild(fotoImg);
+    <!-- Prateleiras (módulos dinâmicos) -->
+    <div class="shelf-container" id="shelfContainer"></div>
 
-          const conteudoDiv = document.createElement('div');
-          conteudoDiv.className = 'conteudo';
-          const nomeSpan = document.createElement('span');
-          nomeSpan.className = 'nome';
-          nomeSpan.textContent = dado.nome;
+    <script>
+        const productNameInput = document.getElementById('productName');
+        const quantityInput = document.getElementById('quantity');
+        const expiryDateInput = document.getElementById('expiryDate');
+        const moduleSelect = document.getElementById('moduleSelect');
+        const addProductButton = document.getElementById('addProduct');
+        const addModuleButton = document.getElementById('addModule');
+        const shelfContainer = document.getElementById('shelfContainer');
+        const moduleSearchInput = document.getElementById('moduleSearch');
 
-          const idadeSpan = document.createElement('span');
-          idadeSpan.className = 'idade';
-          idadeSpan.textContent = `Idade: ${dado.idade}`;
+        let moduleCount = 0;
+        const modules = [];
 
-          const idSpan = document.createElement('span');
-          idSpan.className = 'id';
-          idSpan.textContent = `ID: ${dado.id}`;
+        // Função para salvar os dados no LocalStorage
+        function saveData() {
+            const savedModules = modules.map(module => ({
+                id: module.id,
+                name: module.name,
+                products: Array.from(module.element.querySelectorAll('.product')).map(product => ({
+                    name: product.querySelector('span').textContent.split(' - ')[0],
+                    quantity: product.querySelector('span').textContent.split(' - ')[1].split(' und')[0],
+                    expiryDate: product.querySelector('.countdown').dataset.expiryDate, // Salva a data de validade como string
+                })),
+            }));
+            localStorage.setItem('modules', JSON.stringify(savedModules));
+        }
 
-          conteudoDiv.appendChild(nomeSpan);
-          conteudoDiv.appendChild(idadeSpan);
-          conteudoDiv.appendChild(idSpan);
+        // Função para carregar os dados do LocalStorage
+        function loadData() {
+            const savedModules = JSON.parse(localStorage.getItem('modules'));
+            if (savedModules) {
+                savedModules.forEach(savedModule => {
+                    addModule(savedModule.name, savedModule.id);
+                    savedModule.products.forEach(product => {
+                        addProductToModule(savedModule.id, product.name, product.quantity, product.expiryDate);
+                    });
+                });
+            }
+        }
 
-          li.appendChild(fotoDiv);
-          li.appendChild(conteudoDiv);
-          lista.appendChild(li);
-        });
-      } catch (err) {
-        console.error('Erro ao carregar dados:', err);
-      }
-    }
+        function addModule(name = `Seção ${moduleCount + 1}`, moduleId = `module${moduleCount + 1}`) {
+            moduleCount++;
+            const moduleElement = document.createElement('div');
+            moduleElement.classList.add('module');
+            moduleElement.id = moduleId;
 
-    // Função para adicionar dados
-    document.getElementById('form-adicionar').addEventListener('submit', async function(e) {
-      e.preventDefault();
+            const alertIndicator = document.createElement('div');
+            alertIndicator.classList.add('alert-indicator');
+            alertIndicator.textContent = '0';
+            moduleElement.appendChild(alertIndicator);
 
-      const nome = document.getElementById('nome').value;
-      const idade = document.getElementById('idade').value;
+            const moduleHeader = document.createElement('h3');
+            const inputName = document.createElement('input');
+            inputName.type = 'text';
+            inputName.value = name;
+            inputName.onchange = function() {
+                module.name = inputName.value;
+                saveData(); // Salva após alterar o nome do módulo
+            };
+            moduleHeader.appendChild(inputName);
+            moduleElement.appendChild(moduleHeader);
 
-      const novoDado = { nome, idade };
+            const productList = document.createElement('div');
+            productList.classList.add('product-list');
+            moduleElement.appendChild(productList);
 
-      try {
-        const response = await fetch('http://192.168.1.114:3000/dados', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify(novoDado)
-        });
+            const deleteButton = document.createElement('button');
+            deleteButton.classList.add('btn-delete-module');
+            deleteButton.innerHTML = '&times;';
+            deleteButton.onclick = function() {
+                deleteModule(moduleId);
+            };
+            moduleElement.appendChild(deleteButton);
 
-        const dados = await response.json();
-        carregarDados(); // Recarrega os dados para mostrar o novo item
-        document.getElementById('nome').value = '';
-        document.getElementById('idade').value = '';
-      } catch (err) {
-        console.error('Erro ao adicionar dado:', err);
-      }
-    });
+            // Gerar QR Code para o módulo
+            const qrCodeContainer = document.createElement('div');
+            qrCodeContainer.classList.add('qr-code');
+            new QRCode(qrCodeContainer, {
+                text: window.location.href.split("#")[0] + "#" + moduleId, // O link com o ID do módulo
+                width: 50,
+                height: 50,
+            });
+            moduleElement.appendChild(qrCodeContainer);
 
-    // Carregar dados ao iniciar a página
-    carregarDados();
-  </script>
+            shelfContainer.appendChild(moduleElement);
+
+            const moduleOption = document.createElement('option');
+            moduleOption.value = moduleId;
+            moduleOption.textContent = name; // Aqui está o nome correto do módulo
+            moduleSelect.appendChild(moduleOption);
+
+            modules.push({ id: moduleId, name: name, element: moduleElement });
+
+            saveData(); // Salva os dados no LocalStorage após adicionar um módulo
+        }
+
+        function deleteModule(moduleId) {
+            const moduleElement = document.getElementById(moduleId);
+            moduleElement.remove();
+            const moduleOption = document.querySelector(`option[value="${moduleId}"]`);
+            moduleOption.remove();
+            const index = modules.findIndex(module => module.id === moduleId);
+            if (index > -1) modules.splice(index, 1);
+
+            saveData(); // Salva os dados no LocalStorage após deletar um módulo
+        }
+
+        function updateModuleAlert(moduleId) {
+            const moduleElement = document.getElementById(moduleId);
+            const alertIndicator = moduleElement.querySelector('.alert-indicator');
+            const productList = moduleElement.querySelectorAll('.product');
+
+            let alertCount = 0;
+            productList.forEach(product => {
+                const countdownText = product.querySelector('.countdown').textContent;
+                if (countdownText !== "Expirado") {
+                    const [days] = countdownText.split('d');
+                    if (parseInt(days) < 10) {
+                        alertCount++;
+                    }
+                }
+            });
+
+            alertIndicator.style.visibility = alertCount > 0 ? 'visible' : 'hidden';
+            alertIndicator.textContent = alertCount;
+        }
+
+        function updateCountdown(countdownElement, expiryDate, moduleId) {
+            const interval = setInterval(() => {
+                const now = new Date();
+                const expiry = new Date(expiryDate);
+                const difference = expiry - now;
+
+                if (difference <= 0) {
+                    countdownElement.textContent = "Expirado";
+                    countdownElement.classList.remove('alert');
+                    clearInterval(interval);
+                } else {
+                    const days = Math.floor(difference / (1000 * 60 * 60 * 24));
+                    const hours = Math.floor((difference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                    const minutes = Math.floor((difference % (1000 * 60 * 60)) / (1000 * 60));
+                    const seconds = Math.floor((difference % (1000 * 60)) / 1000);
+                    countdownElement.textContent = `${days}d ${hours}h ${minutes}m ${seconds}s`;
+
+                    // Verificar se está a 10 dias ou menos do vencimento
+                    if (days <= 10) {
+                        countdownElement.classList.add('alert'); // Adiciona a classe para alertar
+                    } else {
+                        countdownElement.classList.remove('alert'); // Remove a classe de alerta
+                    }
+                }
+
+                // Atualizar alerta do módulo
+                updateModuleAlert(moduleId);
+            }, 1000);
+        }
+
+
+        function addProduct() {
+            const productName = productNameInput.value;
+            const quantity = quantityInput.value;
+            const expiryDate = expiryDateInput.value;
+            const selectedModule = moduleSelect.value;
+
+            if (!productName || !quantity || !expiryDate || !selectedModule) {
+                alert('Por favor, preencha todos os campos!');
+                return;
+            }
+
+            addProductToModule(selectedModule, productName, quantity, expiryDate);
+            productNameInput.value = '';
+            quantityInput.value = '';
+            expiryDateInput.value = '';
+        }
+
+        function addProductToModule(moduleId, productName, quantity, expiryDate) {
+            const moduleElement = document.getElementById(moduleId);
+            const productElement = document.createElement('div');
+            productElement.classList.add('product');
+
+            productElement.innerHTML = `
+                <span>${productName} - ${quantity} und</span>
+                <div class="countdown" data-expiry-date="${expiryDate}"></div>
+                <span class="delete-product" onclick="deleteProduct(this)">Excluir</span>
+            `;
+
+            const countdownElement = productElement.querySelector('.countdown');
+            updateCountdown(countdownElement, expiryDate, moduleId);
+
+            const productList = moduleElement.querySelector('.product-list');
+            productList.appendChild(productElement);
+
+            saveData(); // Salva os dados no LocalStorage após adicionar um produto
+        }
+
+        function deleteProduct(deleteButton) {
+            const productElement = deleteButton.closest('.product');
+            const moduleId = productElement.closest('.module').id;
+            productElement.remove();
+            saveData(); // Salva os dados no LocalStorage após excluir um produto
+        }
+
+        function searchModule() {
+            const query = moduleSearchInput.value.trim();
+            if (!query) return;
+
+            const modulesToDisplay = modules.filter(module =>
+                module.name.includes(query) || module.id.includes(query) // Verifica se o nome ou ID do módulo contém a pesquisa
+            );
+
+            shelfContainer.innerHTML = ''; // Limpa a exibição
+            modulesToDisplay.forEach(module => {
+                shelfContainer.appendChild(module.element);
+            });
+        }
+
+        window.onload = loadData;
+
+        addModuleButton.addEventListener('click', () => addModule());
+        addProductButton.addEventListener('click', addProduct);
+    </script>
 </body>
 </html>
